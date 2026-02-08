@@ -12,7 +12,7 @@
     This is a placeholder for base href that will be replaced by the value of
     the `--base-href` argument provided to `flutter build`.
   -->
-  <base href="/">
+  <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
@@ -20,8 +20,13 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="pif">
+  
+  <!-- Android fullscreen -->
+  <meta name="theme-color" content="#0175C2">
+  <meta name="msapplication-navbutton-color" content="#0175C2">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
@@ -31,7 +36,7 @@
   <link rel="manifest" href="manifest.json">
   
   
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport">
   
   
   
@@ -53,15 +58,57 @@
   
   
   <style id="splash-screen-style">
-    html {
-      height: 100%
+    html, body {
+      height: 100%;
+      height: 100vh;
+      height: 100dvh; /* Dynamic viewport height for mobile browsers */
+      width: 100%;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      /* Support for safe areas on notched devices */
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      box-sizing: border-box;
     }
 
     body {
-      margin: 0;
-      min-height: 100%;
       background-color: #FFFFFF;
-          background-size: 100% 100%;
+      background-size: 100% 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    
+    /* Ensure Flutter canvas fills the screen */
+    flt-glass-pane {
+      height: 100% !important;
+      width: 100% !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+    }
+    
+    /* Hide browser UI in standalone mode */
+    @media all and (display-mode: standalone) {
+      html, body {
+        height: 100vh;
+        height: 100dvh;
+      }
+    }
+    
+    @media all and (display-mode: fullscreen) {
+      html, body {
+        height: 100vh;
+        height: 100dvh;
+      }
     }
 
     .center {
@@ -115,6 +162,193 @@
         background-color: #FFFFFF;
           }
     }
+    
+    /* PWA Install Prompt Styles */
+    #pwa-install-banner {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #0175C2 0%, #0056a0 100%);
+      color: white;
+      padding: 16px 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 999999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      max-width: 90%;
+      width: 360px;
+      animation: slideUp 0.4s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateX(-50%) translateY(100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    #pwa-install-banner .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    #pwa-install-banner .app-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: white;
+      padding: 4px;
+      flex-shrink: 0;
+    }
+    
+    #pwa-install-banner .app-icon img {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+    
+    #pwa-install-banner .banner-text {
+      flex: 1;
+    }
+    
+    #pwa-install-banner .banner-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0 0 4px 0;
+    }
+    
+    #pwa-install-banner .banner-description {
+      font-size: 13px;
+      opacity: 0.9;
+      margin: 0;
+    }
+    
+    #pwa-install-banner .banner-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    
+    #pwa-install-banner .install-btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    #pwa-install-banner .install-btn.primary {
+      background: white;
+      color: #0175C2;
+    }
+    
+    #pwa-install-banner .install-btn.primary:hover {
+      background: #f0f0f0;
+      transform: scale(1.02);
+    }
+    
+    #pwa-install-banner .install-btn.secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    
+    #pwa-install-banner .install-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* iOS Install Instructions */
+    #ios-install-instructions {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 24px;
+      padding-bottom: calc(24px + env(safe-area-inset-bottom));
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+      z-index: 999999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      animation: slideUpIOS 0.3s ease-out;
+    }
+    
+    @keyframes slideUpIOS {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+    
+    #ios-install-instructions .ios-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    #ios-install-instructions .ios-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin: 0;
+    }
+    
+    #ios-install-instructions .ios-close {
+      background: #f0f0f0;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      color: #666;
+    }
+    
+    #ios-install-instructions .ios-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    #ios-install-instructions .ios-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 0;
+      color: #333;
+      font-size: 15px;
+    }
+    
+    #ios-install-instructions .step-number {
+      width: 28px;
+      height: 28px;
+      background: #0175C2;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    
+    #ios-install-instructions .ios-icon {
+      font-size: 20px;
+    }
   </style>
   <script id="splash-screen-script">
     function removeSplashFromWeb() {
@@ -123,12 +357,122 @@
       document.body.style.background = "transparent";
     }
   </script>
+  
+  <!-- PWA Install Prompt Script -->
+  <script>
+    let deferredPrompt;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    
+    // Check if already installed or dismissed
+    function shouldShowInstallPrompt() {
+      if (isStandalone) return false;
+      const dismissed = localStorage.getItem('pwa-install-dismissed');
+      if (dismissed) {
+        const dismissedTime = parseInt(dismissed);
+        // Show again after 7 days
+        if (Date.now() - dismissedTime < 7 * 24 * 60 * 60 * 1000) {
+          return false;
+        }
+      }
+      return true;
+    }
+    
+    // For Android/Desktop Chrome - capture the install event
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      if (shouldShowInstallPrompt()) {
+        // Show after a delay so app loads first
+        setTimeout(() => {
+          document.getElementById('pwa-install-banner').style.display = 'block';
+        }, 3000);
+      }
+    });
+    
+    // For iOS - show custom instructions
+    window.addEventListener('load', () => {
+      if (isIOS && !isStandalone && shouldShowInstallPrompt()) {
+        setTimeout(() => {
+          document.getElementById('pwa-install-banner').style.display = 'block';
+        }, 3000);
+      }
+    });
+    
+    // Install button click handler
+    function installPWA() {
+      if (isIOS) {
+        // Show iOS instructions
+        document.getElementById('pwa-install-banner').style.display = 'none';
+        document.getElementById('ios-install-instructions').style.display = 'block';
+      } else if (deferredPrompt) {
+        // Trigger the install prompt
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          }
+          deferredPrompt = null;
+          document.getElementById('pwa-install-banner').style.display = 'none';
+        });
+      }
+    }
+    
+    // Dismiss button click handler
+    function dismissInstall() {
+      document.getElementById('pwa-install-banner').style.display = 'none';
+      document.getElementById('ios-install-instructions').style.display = 'none';
+      localStorage.setItem('pwa-install-dismissed', Date.now().toString());
+    }
+    
+    // When app is installed
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA was installed');
+      document.getElementById('pwa-install-banner').style.display = 'none';
+      deferredPrompt = null;
+    });
+  </script>
 </head>
 <body>
+  <!-- PWA Install Banner -->
+  <div id="pwa-install-banner">
+    <div class="banner-content">
+      <div class="app-icon">
+        <img src="icons/Icon-192.png" alt="App Icon">
+      </div>
+      <div class="banner-text">
+        <p class="banner-title">Install PIF App</p>
+        <p class="banner-description">Add to home screen for a better experience</p>
+      </div>
+    </div>
+    <div class="banner-buttons">
+      <button class="install-btn secondary" onclick="dismissInstall()">Not Now</button>
+      <button class="install-btn primary" onclick="installPWA()">Install</button>
+    </div>
+  </div>
   
-  
-  
-  
+  <!-- iOS Install Instructions -->
+  <div id="ios-install-instructions">
+    <div class="ios-header">
+      <h3 class="ios-title">Install PIF App</h3>
+      <button class="ios-close" onclick="dismissInstall()">✕</button>
+    </div>
+    <ol class="ios-steps">
+      <li class="ios-step">
+        <span class="step-number">1</span>
+        <span>Tap the <span class="ios-icon">⎙</span> Share button in Safari</span>
+      </li>
+      <li class="ios-step">
+        <span class="step-number">2</span>
+        <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
+      </li>
+      <li class="ios-step">
+        <span class="step-number">3</span>
+        <span>Tap <strong>"Add"</strong> to install the app</span>
+      </li>
+    </ol>
+  </div>
   
   <script src="flutter_bootstrap.js" async=""></script>
 
