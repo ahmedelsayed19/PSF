@@ -5,7 +5,7 @@
     "id": "psf-app",
     "display": "standalone",
     "display_override": ["fullscreen", "standalone"],
-    "background_color": "#0257367",
+    "background_color": "#257367",
     "theme_color": "#257367",
     "description": "PSF - Private Sector Forum",
     "orientation": "portrait-primary",
